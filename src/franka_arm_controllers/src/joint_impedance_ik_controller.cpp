@@ -221,7 +221,7 @@ CallbackReturn JointImpedanceIKController::on_configure(
     return CallbackReturn::FAILURE;
   }
 
-  std::string tcp_name = namespace_prefix_ + "fr3_hand_tcp";
+  std::string tcp_name = namespace_prefix_ + arm_id_ + "_hand_tcp";
   if (!tree_.getChain("base", tcp_name, chain_)) {
     RCLCPP_FATAL(get_node()->get_logger(), "Failed to extract KDL chain.");
     return CallbackReturn::FAILURE;
