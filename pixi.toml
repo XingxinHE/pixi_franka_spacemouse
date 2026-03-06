@@ -1,0 +1,31 @@
+[workspace]
+authors = ["Xingxin HE <xingxin.he@connect.ust.hk>"]
+channels = ["robostack-humble", "conda-forge"]
+name = "franka_spacemouse"
+platforms = ["linux-64"]
+version = "0.1.0"
+
+[activation]
+scripts = ["install/setup.sh"]
+
+[tasks]
+build = "colcon build --symlink-install --packages-select spacemouse_publisher"
+test = "colcon test --packages-select spacemouse_publisher && colcon test-result --verbose"
+run-spacemouse = "ros2 launch spacemouse_publisher spacemouse_publisher.launch.py"
+run-spacemouse-recording = "ros2 launch spacemouse_publisher spacemouse_publisher.launch.py config_file:=example_crisp_gym_recording_fr3.yaml"
+clean = "rm -rf build install log"
+
+[dependencies]
+ros-humble-ros-base = ">=0.10.0,<0.11"
+ros-humble-rclpy = ">=3.3.16,<4"
+ros-humble-geometry-msgs = ">=4.9.0,<5"
+ros-humble-std-msgs = ">=4.9.0,<5"
+ros-humble-launch-ros = ">=0.19.10,<0.20"
+colcon-common-extensions = ">=0.3.0,<0.4"
+setuptools = "<=58.2.0"
+python = ">=3.11.14,<3.12"
+pyyaml = ">=6.0.3,<7"
+hidapi = ">=0.15.0,<0.16"
+
+[pypi-dependencies]
+pyspacemouse = ">=2.0.0, <3"

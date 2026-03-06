@@ -21,6 +21,7 @@ def generate_nodes(context):
     configs = load_yaml(config_file)
     nodes = []
     for item_name, config in configs.items():
+        node_parameters = {k: v for k, v in config.items() if k != "namespace"}
         nodes.append(
             Node(
                 package="spacemouse_publisher",
@@ -28,10 +29,7 @@ def generate_nodes(context):
                 name="spacemouse_publisher",
                 namespace=str(config["namespace"]),
                 output="screen",
-                parameters=[
-                    {"operator_position_front": config["operator_position_front"]},
-                    {"device_path": str(config["device_path"])},
-                ],
+                parameters=[node_parameters],
             )
         )
 

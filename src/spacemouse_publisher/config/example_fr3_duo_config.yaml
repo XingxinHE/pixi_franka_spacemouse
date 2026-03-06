@@ -2,7 +2,39 @@ LEFT:
   namespace: left
   device_path: /dev/hidraw6
   operator_position_front: true
+  command_mode: 'pose'
+  publish_rate_hz: 100.0
+  current_pose_topic: 'current_pose'
+  target_pose_topic: 'target_pose'
+  publish_legacy_twist: false
+  target_twist_topic: 'franka_controller/target_cartesian_velocity_percent'
+  linear_scale: 0.06
+  angular_scale: 0.7
+  deadband: 0.05
+  max_translation_step: 0.003
+  max_rotation_step: 0.03
+  stale_pose_timeout_sec: 0.5
+  target_frame_id: ''
+  gripper_width_topic: 'gripper_client/target_gripper_width_percent'
+  publish_crisp_gripper_command: false
+  crisp_gripper_command_topic: 'gripper/gripper_position_controller/commands'
 RIGHT:
   namespace: right
   device_path: /dev/hidraw7
   operator_position_front: true
+  command_mode: 'pose'
+  publish_rate_hz: 100.0
+  current_pose_topic: 'current_pose'
+  target_pose_topic: 'target_pose'
+  publish_legacy_twist: false
+  target_twist_topic: 'franka_controller/target_cartesian_velocity_percent'
+  linear_scale: 0.06
+  angular_scale: 0.7
+  deadband: 0.05
+  max_translation_step: 0.003
+  max_rotation_step: 0.03
+  stale_pose_timeout_sec: 0.5
+  target_frame_id: ''
+  gripper_width_topic: 'gripper_client/target_gripper_width_percent'
+  publish_crisp_gripper_command: false
+  crisp_gripper_command_topic: 'gripper/gripper_position_controller/commands'

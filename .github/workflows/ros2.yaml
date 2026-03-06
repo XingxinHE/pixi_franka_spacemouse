@@ -9,16 +9,22 @@ on:
     - cron: "0 0 * * 0"
 
 jobs:
-  test-in-devcontainer:
+  test-with-pixi:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v3
 
-      - name: Build and test ROS 2 workspace
-        uses: devcontainers/ci@v0.3
-        with:
-          runCmd: |
-            colcon build --cmake-args -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCHECK_TIDY=ON
-            colcon test
-            colcon test-result --verbose
+      - name: Install Pixi
+        run: |
+          curl -fsSL https://pixi.sh/install.sh | bash
+          echo "$HOME/.pixi/bin" >> "$GITHUB_PATH"
+
+      - name: Resolve environment
+        run: pixi install
+
+      - name: Build package
+        run: pixi run build
+
+      - name: Test package
+        run: pixi run test

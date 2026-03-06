@@ -16,5 +16,8 @@ robot1:
   stale_pose_timeout_sec: 0.5
   target_frame_id: ''
   gripper_width_topic: 'gripper_client/target_gripper_width_percent'
-  publish_crisp_gripper_command: false
+  publish_crisp_gripper_command: true
   crisp_gripper_command_topic: 'gripper/gripper_position_controller/commands'
+  publish_streamed_teleop: true
+  streamed_pose_topic: 'phone_pose'
+  streamed_gripper_topic: 'phone_gripper'
