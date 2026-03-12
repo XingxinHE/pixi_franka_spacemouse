@@ -8,6 +8,11 @@ version = "0.1.0"
 [activation]
 scripts = ["install/setup.sh"]
 
+[activation.env]
+ROS_DOMAIN_ID = "100"
+RMW_IMPLEMENTATION = "rmw_zenoh_cpp"
+ZENOH_CONFIG_OVERRIDE = 'mode="client";connect/endpoints=["tcp/172.16.0.100:7447"]'
+
 [tasks]
 build = "colcon build --symlink-install --packages-select spacemouse_publisher"
 test = "colcon test --packages-select spacemouse_publisher && colcon test-result --verbose"
@@ -26,6 +31,7 @@ setuptools = "<=58.2.0"
 python = ">=3.11.14,<3.12"
 pyyaml = ">=6.0.3,<7"
 hidapi = ">=0.15.0,<0.16"
+ros-humble-rmw-zenoh-cpp = "*"
 
 [pypi-dependencies]
 pyspacemouse = ">=2.0.0, <3"
