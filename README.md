@@ -33,6 +33,12 @@ pixi run run-spacemouse
 pixi run run-spacemouse-recording
 ```
 
+Mode definitions:
+- `run-spacemouse`: testing mode, publishes direct robot commands (`target_pose` and gripper width topic).
+- `run-spacemouse-recording`: recording mode, publishes streamed teleop topics (`phone_pose`, `phone_gripper`) without direct robot commands.
+
+Do not run both modes at the same time.
+
 If you want a fresh build directory:
 
 ```bash

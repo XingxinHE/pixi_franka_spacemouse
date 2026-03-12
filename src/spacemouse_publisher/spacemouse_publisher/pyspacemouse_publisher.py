@@ -47,6 +47,11 @@ class SpaceMousePublisher(Node):
             self.get_parameter("target_pose_topic").get_parameter_value().string_value
         )
 
+        self.declare_parameter("publish_target_pose", True)
+        self._publish_target_pose = (
+            self.get_parameter("publish_target_pose").get_parameter_value().bool_value
+        )
+
         self.declare_parameter("current_pose_topic", "current_pose")
         self._current_pose_topic = (
             self.get_parameter("current_pose_topic").get_parameter_value().string_value
@@ -104,6 +109,11 @@ class SpaceMousePublisher(Node):
             self.get_parameter("gripper_width_topic").get_parameter_value().string_value
         )
 
+        self.declare_parameter("publish_gripper_width", True)
+        self._publish_gripper_width = (
+            self.get_parameter("publish_gripper_width").get_parameter_value().bool_value
+        )
+
         self.declare_parameter("publish_crisp_gripper_command", False)
         self._publish_crisp_gripper_command = (
             self.get_parameter("publish_crisp_gripper_command").get_parameter_value().bool_value
@@ -134,12 +144,16 @@ class SpaceMousePublisher(Node):
         self._twist_publisher = self.create_publisher(
             Twist, self._target_twist_topic, 10
         )
-        self._target_pose_publisher = self.create_publisher(
-            PoseStamped, self._target_pose_topic, 10
-        )
-        self._gripper_width_publisher = self.create_publisher(
-            Float32, self._gripper_width_topic, 10
-        )
+        self._target_pose_publisher = None
+        if self._publish_target_pose:
+            self._target_pose_publisher = self.create_publisher(
+                PoseStamped, self._target_pose_topic, 10
+            )
+        self._gripper_width_publisher = None
+        if self._publish_gripper_width:
+            self._gripper_width_publisher = self.create_publisher(
+                Float32, self._gripper_width_topic, 10
+            )
         self._crisp_gripper_command_publisher = None
         if self._publish_crisp_gripper_command:
             self._crisp_gripper_command_publisher = self.create_publisher(
@@ -366,7 +380,8 @@ class SpaceMousePublisher(Node):
         target.pose.orientation.w = q_next[3]
 
         self._target_pose_msg = target
-        self._target_pose_publisher.publish(target)
+        if self._target_pose_publisher is not None:
+            self._target_pose_publisher.publish(target)
         if self._streamed_pose_publisher is not None:
             self._streamed_pose_publisher.publish(target)
 
@@ -386,7 +401,8 @@ class SpaceMousePublisher(Node):
 
         target_gripper_width_percent_msg.data = gripper_value
 
-        self._gripper_width_publisher.publish(target_gripper_width_percent_msg)
+        if self._gripper_width_publisher is not None:
+            self._gripper_width_publisher.publish(target_gripper_width_percent_msg)
 
         if self._streamed_gripper_publisher is not None:
             streamed_gripper_msg = Float32()

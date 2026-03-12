@@ -6,6 +6,7 @@ robot1:
   publish_rate_hz: 100.0
   current_pose_topic: 'current_pose'
   target_pose_topic: 'target_pose'
+  publish_target_pose: false
   publish_legacy_twist: false
   target_twist_topic: 'franka_controller/target_cartesian_velocity_percent'
   linear_scale: 0.06
@@ -16,7 +17,8 @@ robot1:
   stale_pose_timeout_sec: 0.5
   target_frame_id: ''
   gripper_width_topic: 'gripper_client/target_gripper_width_percent'
-  publish_crisp_gripper_command: true
+  publish_gripper_width: false
+  publish_crisp_gripper_command: false
   crisp_gripper_command_topic: 'gripper/gripper_position_controller/commands'
   publish_streamed_teleop: true
   streamed_pose_topic: 'phone_pose'
