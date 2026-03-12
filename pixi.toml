@@ -11,7 +11,7 @@ scripts = ["install/setup.sh"]
 [activation.env]
 ROS_DOMAIN_ID = "100"
 RMW_IMPLEMENTATION = "rmw_zenoh_cpp"
-ZENOH_CONFIG_OVERRIDE = 'mode="client";connect/endpoints=["tcp/172.16.0.100:7447"]'
+ZENOH_SESSION_CONFIG_URI="./configs/zenoh_client.json5"
 
 [tasks]
 build = "colcon build --symlink-install --packages-select spacemouse_publisher"
