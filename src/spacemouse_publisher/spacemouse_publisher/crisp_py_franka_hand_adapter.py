@@ -21,7 +21,7 @@ class CrispPyFrankaHandAdapter(Node):
         self.declare_parameter("franka_gripper_namespace", "franka_gripper")
         self.declare_parameter("publish_joint_state_hz", 50.0)
         self.declare_parameter("open_threshold", 0.07)
-        self.declare_parameter("toggle_threshold", 0.5)
+        self.declare_parameter("toggle_threshold", 0.04)
         self.declare_parameter("open_width", 0.08)
         self.declare_parameter("close_width", 0.0)
         self.declare_parameter("gripper_speed", 0.1)
