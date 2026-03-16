@@ -24,22 +24,32 @@ class SpaceMousePublisher(Node):
 
         self.declare_parameter("operator_position_front", True)
         self._operator_position_front = (
-            self.get_parameter("operator_position_front").get_parameter_value().bool_value
+            self.get_parameter("operator_position_front")
+            .get_parameter_value()
+            .bool_value
         )
-        self.get_logger().info(f"Operator position front: {self._operator_position_front}")
+        self.get_logger().info(
+            f"Operator position front: {self._operator_position_front}"
+        )
 
         self.declare_parameter("device_path", "")
-        self._device_path = self.get_parameter("device_path").get_parameter_value().string_value
+        self._device_path = (
+            self.get_parameter("device_path").get_parameter_value().string_value
+        )
 
         self.declare_parameter("command_mode", "pose")
-        self._command_mode = self.get_parameter("command_mode").get_parameter_value().string_value
+        self._command_mode = (
+            self.get_parameter("command_mode").get_parameter_value().string_value
+        )
 
         self.declare_parameter("publish_rate_hz", 100.0)
         self._publish_rate_hz = (
             self.get_parameter("publish_rate_hz").get_parameter_value().double_value
         )
         if self._publish_rate_hz <= 0.0:
-            self.get_logger().warn("publish_rate_hz must be positive. Falling back to 100.0")
+            self.get_logger().warn(
+                "publish_rate_hz must be positive. Falling back to 100.0"
+            )
             self._publish_rate_hz = 100.0
 
         self.declare_parameter("target_pose_topic", "target_pose")
@@ -80,11 +90,15 @@ class SpaceMousePublisher(Node):
         )
 
         self.declare_parameter("deadband", 0.05)
-        self._deadband = self.get_parameter("deadband").get_parameter_value().double_value
+        self._deadband = (
+            self.get_parameter("deadband").get_parameter_value().double_value
+        )
 
         self.declare_parameter("max_translation_step", 0.003)
         self._max_translation_step = (
-            self.get_parameter("max_translation_step").get_parameter_value().double_value
+            self.get_parameter("max_translation_step")
+            .get_parameter_value()
+            .double_value
         )
 
         self.declare_parameter("max_rotation_step", 0.03)
@@ -94,7 +108,9 @@ class SpaceMousePublisher(Node):
 
         self.declare_parameter("stale_pose_timeout_sec", 0.5)
         self._stale_pose_timeout_sec = (
-            self.get_parameter("stale_pose_timeout_sec").get_parameter_value().double_value
+            self.get_parameter("stale_pose_timeout_sec")
+            .get_parameter_value()
+            .double_value
         )
 
         self.declare_parameter("target_frame_id", "")
@@ -116,12 +132,16 @@ class SpaceMousePublisher(Node):
 
         self.declare_parameter("publish_crisp_gripper_command", False)
         self._publish_crisp_gripper_command = (
-            self.get_parameter("publish_crisp_gripper_command").get_parameter_value().bool_value
+            self.get_parameter("publish_crisp_gripper_command")
+            .get_parameter_value()
+            .bool_value
         )
 
         self.declare_parameter("publish_streamed_teleop", False)
         self._publish_streamed_teleop = (
-            self.get_parameter("publish_streamed_teleop").get_parameter_value().bool_value
+            self.get_parameter("publish_streamed_teleop")
+            .get_parameter_value()
+            .bool_value
         )
 
         self.declare_parameter("streamed_pose_topic", "phone_pose")
@@ -131,14 +151,19 @@ class SpaceMousePublisher(Node):
 
         self.declare_parameter("streamed_gripper_topic", "phone_gripper")
         self._streamed_gripper_topic = (
-            self.get_parameter("streamed_gripper_topic").get_parameter_value().string_value
+            self.get_parameter("streamed_gripper_topic")
+            .get_parameter_value()
+            .string_value
         )
 
         self.declare_parameter(
-            "crisp_gripper_command_topic", "gripper/gripper_position_controller/commands"
+            "crisp_gripper_command_topic",
+            "gripper/gripper_position_controller/commands",
         )
         self._crisp_gripper_command_topic = (
-            self.get_parameter("crisp_gripper_command_topic").get_parameter_value().string_value
+            self.get_parameter("crisp_gripper_command_topic")
+            .get_parameter_value()
+            .string_value
         )
 
         self._twist_publisher = self.create_publisher(
@@ -175,9 +200,14 @@ class SpaceMousePublisher(Node):
         self._latest_pose_time = None
         self._spacemouse_device = None
         self._last_buttons = []
-        self.create_subscription(PoseStamped, self._current_pose_topic, self._pose_callback, 10)
+        self._current_gripper_value = None
+        self.create_subscription(
+            PoseStamped, self._current_pose_topic, self._pose_callback, 10
+        )
 
-        self._timer = self.create_timer(1.0 / self._publish_rate_hz, self._timer_callback)
+        self._timer = self.create_timer(
+            1.0 / self._publish_rate_hz, self._timer_callback
+        )
         self._device_open_success = self._open_spacemouse()
 
         self.get_logger().info(
@@ -340,9 +370,15 @@ class SpaceMousePublisher(Node):
         if self._target_pose_msg is None:
             return
 
-        dx = self._clamp(twist_msg.linear.x * self._linear_scale * dt, self._max_translation_step)
-        dy = self._clamp(twist_msg.linear.y * self._linear_scale * dt, self._max_translation_step)
-        dz = self._clamp(twist_msg.linear.z * self._linear_scale * dt, self._max_translation_step)
+        dx = self._clamp(
+            twist_msg.linear.x * self._linear_scale * dt, self._max_translation_step
+        )
+        dy = self._clamp(
+            twist_msg.linear.y * self._linear_scale * dt, self._max_translation_step
+        )
+        dz = self._clamp(
+            twist_msg.linear.z * self._linear_scale * dt, self._max_translation_step
+        )
 
         droll = self._clamp(
             twist_msg.angular.x * self._angular_scale * dt, self._max_rotation_step
@@ -384,6 +420,13 @@ class SpaceMousePublisher(Node):
             self._target_pose_publisher.publish(target)
         if self._streamed_pose_publisher is not None:
             self._streamed_pose_publisher.publish(target)
+        if (
+            self._streamed_gripper_publisher is not None
+            and self._current_gripper_value is not None
+        ):
+            streamed_gripper_msg = Float32()
+            streamed_gripper_msg.data = self._current_gripper_value
+            self._streamed_gripper_publisher.publish(streamed_gripper_msg)
 
     def _button_callback(self, state, buttons, pressed_buttons):
         target_gripper_width_percent_msg = Float32()
@@ -399,6 +442,7 @@ class SpaceMousePublisher(Node):
         if gripper_value is None:
             return
 
+        self._current_gripper_value = gripper_value
         target_gripper_width_percent_msg.data = gripper_value
 
         if self._gripper_width_publisher is not None:
@@ -415,7 +459,9 @@ class SpaceMousePublisher(Node):
             self._crisp_gripper_command_publisher.publish(crisp_msg)
 
     def destroy_node(self):
-        if self._spacemouse_device is not None and hasattr(self._spacemouse_device, "close"):
+        if self._spacemouse_device is not None and hasattr(
+            self._spacemouse_device, "close"
+        ):
             self._spacemouse_device.close()
         super().destroy_node()
 
