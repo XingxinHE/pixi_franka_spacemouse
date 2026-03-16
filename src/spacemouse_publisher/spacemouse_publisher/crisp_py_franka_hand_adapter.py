@@ -44,8 +44,9 @@ class CrispPyFrankaHandAdapter(Node):
         self._epsilon_inner = float(self.get_parameter("epsilon_inner").value)
         self._epsilon_outer = float(self.get_parameter("epsilon_outer").value)
 
-        self._is_closing = False
+        self._last_discrete_command = None
         self._current_width = None
+        self._goal_in_flight = False
         self._cb_group = ReentrantCallbackGroup()
 
         self._grasp_client = ActionClient(
@@ -117,25 +118,73 @@ class CrispPyFrankaHandAdapter(Node):
                 return
 
         command = float(msg.data[0])
-        is_open = (
-            self._current_width is None or self._current_width > self._open_threshold
-        )
+        should_close = command <= self._toggle_threshold
+        discrete_command = "close" if should_close else "open"
 
-        if command <= self._toggle_threshold and is_open and not self._is_closing:
+        if discrete_command == self._last_discrete_command:
+            return
+
+        if should_close:
             self._send_grasp(self._close_width)
-            self._is_closing = True
-        elif command > self._toggle_threshold and (not is_open) and self._is_closing:
+        else:
             self._send_grasp(self._open_width)
-            self._is_closing = False
+
+        self._last_discrete_command = discrete_command
 
     def _send_grasp(self, width: float):
+        if self._goal_in_flight:
+            self.get_logger().warn(
+                "Previous gripper goal still in flight; dropping command.",
+                throttle_duration_sec=1.0,
+            )
+            return
+
         goal = Grasp.Goal()
         goal.width = width
         goal.speed = self._gripper_speed
         goal.force = self._gripper_force
         goal.epsilon.inner = self._epsilon_inner
         goal.epsilon.outer = self._epsilon_outer
-        self._grasp_client.send_goal_async(goal)
+        self._goal_in_flight = True
+        future = self._grasp_client.send_goal_async(goal)
+        future.add_done_callback(self._goal_response_callback)
+
+    def _goal_response_callback(self, future):
+        try:
+            goal_handle = future.result()
+        except Exception as exc:
+            self._goal_in_flight = False
+            self._last_discrete_command = None
+            self.get_logger().warn(f"Franka gripper goal send failed: {exc}")
+            return
+
+        if goal_handle is None or not goal_handle.accepted:
+            self._goal_in_flight = False
+            self._last_discrete_command = None
+            self.get_logger().warn(
+                "Franka gripper goal was rejected; command state reset.",
+                throttle_duration_sec=1.0,
+            )
+            return
+
+        result_future = goal_handle.get_result_async()
+        result_future.add_done_callback(self._goal_result_callback)
+
+    def _goal_result_callback(self, future):
+        self._goal_in_flight = False
+        try:
+            result_msg = future.result()
+        except Exception as exc:
+            self._last_discrete_command = None
+            self.get_logger().warn(f"Franka gripper result retrieval failed: {exc}")
+            return
+
+        if result_msg is None or not getattr(result_msg.result, "success", False):
+            self._last_discrete_command = None
+            self.get_logger().warn(
+                "Franka gripper action reported failure; command state reset.",
+                throttle_duration_sec=1.0,
+            )
 
 
 def main(args=None):
