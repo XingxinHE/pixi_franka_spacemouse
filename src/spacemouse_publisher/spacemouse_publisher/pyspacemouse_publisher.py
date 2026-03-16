@@ -319,6 +319,19 @@ class SpaceMousePublisher(Node):
         if not self._device_open_success:
             return
 
+        state = self._read_spacemouse()
+        if state is None:
+            return
+
+        self._handle_button_edges(state)
+        if (
+            self._streamed_gripper_publisher is not None
+            and self._current_gripper_value is not None
+        ):
+            streamed_gripper_msg = Float32()
+            streamed_gripper_msg.data = self._current_gripper_value
+            self._streamed_gripper_publisher.publish(streamed_gripper_msg)
+
         if self._latest_pose_msg is None:
             self.get_logger().warn(
                 (
@@ -340,11 +353,6 @@ class SpaceMousePublisher(Node):
                 )
                 return
 
-        state = self._read_spacemouse()
-        if state is None:
-            return
-
-        self._handle_button_edges(state)
         dt = 1.0 / self._publish_rate_hz
 
         twist_msg = Twist()
@@ -420,13 +428,6 @@ class SpaceMousePublisher(Node):
             self._target_pose_publisher.publish(target)
         if self._streamed_pose_publisher is not None:
             self._streamed_pose_publisher.publish(target)
-        if (
-            self._streamed_gripper_publisher is not None
-            and self._current_gripper_value is not None
-        ):
-            streamed_gripper_msg = Float32()
-            streamed_gripper_msg.data = self._current_gripper_value
-            self._streamed_gripper_publisher.publish(streamed_gripper_msg)
 
     def _button_callback(self, state, buttons, pressed_buttons):
         target_gripper_width_percent_msg = Float32()
