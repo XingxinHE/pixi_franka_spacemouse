@@ -242,6 +242,7 @@ environments:
       - conda: https://conda.anaconda.org/robostack-humble/linux-64/ros-humble-fastrtps-2.6.10-np126py311hbc2a38a_13.conda
       - conda: https://conda.anaconda.org/robostack-humble/linux-64/ros-humble-fastrtps-cmake-module-2.2.2-np126py311hbc2a38a_13.conda
       - conda: https://conda.anaconda.org/robostack-humble/linux-64/ros-humble-foonathan-memory-vendor-1.2.0-np126py311hbc2a38a_13.conda
+      - conda: https://conda.anaconda.org/robostack-humble/linux-64/ros-humble-franka-msgs-1.0.0-np126py311hbc2a38a_13.conda
       - conda: https://conda.anaconda.org/robostack-humble/linux-64/ros-humble-geometry-msgs-4.9.0-np126py311hbc2a38a_13.conda
       - conda: https://conda.anaconda.org/robostack-humble/linux-64/ros-humble-geometry2-0.25.14-np126py311hbc2a38a_13.conda
       - conda: https://conda.anaconda.org/robostack-humble/linux-64/ros-humble-gmock-vendor-1.10.9006-np126py311hbc2a38a_13.conda
@@ -3909,6 +3910,29 @@ packages:
   license: BSD-3-Clause
   size: 19378
   timestamp: 1753309101789
+- conda: https://conda.anaconda.org/robostack-humble/linux-64/ros-humble-franka-msgs-1.0.0-np126py311hbc2a38a_13.conda
+  sha256: dbb0e5e92bed6b04dabc23c6cd5abb1da82a8d26ec6a57148112f59699ce81d5
+  md5: a43807def2ced755dd12c61ad1aa98cc
+  depends:
+  - python
+  - ros-humble-action-msgs
+  - ros-humble-builtin-interfaces
+  - ros-humble-geometry-msgs
+  - ros-humble-ros-workspace
+  - ros-humble-rosidl-default-runtime
+  - ros-humble-sensor-msgs
+  - ros-humble-std-msgs
+  - ros2-distro-mutex 0.7.* humble_*
+  - libgcc >=13
+  - libstdcxx >=13
+  - libgcc >=13
+  - __glibc >=2.17,<3.0.a0
+  - python_abi 3.11.* *_cp311
+  - numpy >=1.26.4,<2.0a0
+  - ros2-distro-mutex >=0.7.0,<0.8.0a0
+  license: BSD-3-Clause
+  size: 467784
+  timestamp: 1754305780096
 - conda: https://conda.anaconda.org/robostack-humble/linux-64/ros-humble-geometry-msgs-4.9.0-np126py311hbc2a38a_13.conda
   sha256: 66aac3623a511209119c1632331f3055cd2b9c8dd612490d5151221a8e715105
   md5: 1dffeaa1fd651a86000aabac131b8b25

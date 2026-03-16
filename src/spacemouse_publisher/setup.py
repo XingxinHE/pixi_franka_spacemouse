@@ -26,6 +26,7 @@ setup(
     entry_points={
         "console_scripts": [
             "pyspacemouse_publisher = spacemouse_publisher.pyspacemouse_publisher:main",
+            "crisp_py_franka_hand_adapter = spacemouse_publisher.crisp_py_franka_hand_adapter:main",
         ],
     },
 )

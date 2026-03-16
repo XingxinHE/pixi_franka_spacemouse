@@ -37,6 +37,16 @@ Mode definitions:
 - `run-spacemouse`: testing mode, publishes direct robot commands (`target_pose` and gripper width topic).
 - `run-spacemouse-recording`: recording mode, publishes streamed teleop topics (`phone_pose`, `phone_gripper`) without direct robot commands.
 
+Both modes also launch a Franka-hand adapter by default:
+- subscribes to `gripper/gripper_position_controller/commands` (`Float64MultiArray`)
+- sends Franka gripper actions on `franka_gripper/grasp`
+
+Disable the adapter if needed:
+
+```bash
+pixi run run-spacemouse -- --enable_crisp_gripper_adapter:=false
+```
+
 Do not run both modes at the same time.
 
 If you want a fresh build directory:
